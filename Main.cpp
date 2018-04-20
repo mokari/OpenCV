@@ -3,5 +3,5 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	cout<<"Welcome to openCV";
+	cout<<"Welcome to openCV"<<endl;
 }
