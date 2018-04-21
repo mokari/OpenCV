@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
+#include <algorithm>
+#include <functional>
 
 using namespace cv;
 
@@ -34,6 +36,15 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+template< typename T>
+void ForAllPixels(cv::Mat &mat, std::function <void (MatIterator_<T>&)> handler)
+{
+	auto it = mat.begin<T>();
+	auto end = mat.end<T>();
+	for (; it != end; ++it)
+		handler(it);
+}
+
 cv::Mat& invert_mat(cv::Mat &mat) {
     // accept only char type matrices
     CV_Assert(mat.depth() == CV_8U);
@@ -42,19 +53,15 @@ cv::Mat& invert_mat(cv::Mat &mat) {
     switch (channels) {
         case 1: {
 //            gray scale image
-            MatIterator_<uchar> it, end;
-            for (it = mat.begin<uchar>(), end = mat.end<uchar>(); it != end; ++it)
-                *it = ~*it;
-            break;
+			ForAllPixels<uchar>(mat, [](auto& it) {*it = ~*it; });
+			break;
         }
         case 3: {
 //            RGB image
-            MatIterator_<Vec3b> it, end;
-            for (it = mat.begin<Vec3b>(), end = mat.end<Vec3b>(); it != end; ++it) {
-                (*it)[0] = ~(*it)[0];
-                (*it)[1] = ~(*it)[1];
-                (*it)[2] = ~(*it)[2];
-            }
+			ForAllPixels<Vec3b>(mat, [](auto& it) {
+				(*it)[0] = ~(*it)[0];
+				(*it)[1] = ~(*it)[1];
+				(*it)[2] = ~(*it)[2]; });
         }
     }
 
