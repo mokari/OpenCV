@@ -37,12 +37,12 @@ int main(int argc, char **argv) {
 }
 
 template< typename T>
-void ForAllPixels(cv::Mat &mat, std::function <void (MatIterator_<T>&)> handler)
+void ForAllPixels(cv::Mat &mat, std::function <void (T&)> handler)
 {
 	auto it = mat.begin<T>();
 	auto end = mat.end<T>();
 	for (; it != end; ++it)
-		handler(it);
+		handler(*it);
 }
 
 cv::Mat& invert_mat(cv::Mat &mat) {
@@ -53,15 +53,15 @@ cv::Mat& invert_mat(cv::Mat &mat) {
     switch (channels) {
         case 1: {
 //            gray scale image
-			ForAllPixels<uchar>(mat, [](auto& it) {*it = ~*it; });
+			ForAllPixels<uchar>(mat, [](auto& it) {it = ~it; });
 			break;
         }
         case 3: {
 //            RGB image
 			ForAllPixels<Vec3b>(mat, [](auto& it) {
-				(*it)[0] = ~(*it)[0];
-				(*it)[1] = ~(*it)[1];
-				(*it)[2] = ~(*it)[2]; });
+				it[0] = ~it[0];
+				it[1] = ~it[1];
+				it[2] = ~it[2]; });
         }
     }
 
